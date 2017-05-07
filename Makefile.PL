@@ -9,7 +9,7 @@ WriteMakefile(
 		Mojolicious => 1,
 	}, # e.g., Module::Name => 1.1
 	ABSTRACT_FROM     => 'lib/GPS/Track.pm', # retrieve abstract from module
-	AUTHOR            => 'ghandi <ghandi@(none)>',
+	AUTHOR            => 'Sven Eppler <cpan@sveneppler.de>',
 	#LICENSE           => 'perl',
 	#Value must be from legacy list of licenses here
 	#http://search.cpan.org/perldoc?Module%3A%3ABuild%3A%3AAPI
