@@ -8,8 +8,11 @@ WriteMakefile(
 	PREREQ_PM         => {
 		"Mojolicious" => 0,
 		"Geo::Distance" => 0,
-
 	}, # e.g., Module::Name => 1.1
+	TEST_REQUIRES => {
+		"Test::More" => 0,
+		"Test::Exception" => 0,
+	},
 	ABSTRACT_FROM     => 'lib/GPS/Track.pm', # retrieve abstract from module
 	AUTHOR            => 'Sven Eppler <cpan@sveneppler.de>',
 	#LICENSE           => 'perl',
