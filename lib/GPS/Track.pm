@@ -1,6 +1,6 @@
 package GPS::Track;
 
-use 5.024000;
+use 5.018000;
 use strict;
 use warnings;
 
