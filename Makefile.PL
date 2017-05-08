@@ -6,7 +6,9 @@ WriteMakefile(
 	NAME              => 'GPS::Track',
 	VERSION_FROM      => 'lib/GPS/Track.pm', # finds $VERSION, requires EU::MM from perl >= 5.5
 	PREREQ_PM         => {
-		Mojolicious => 1,
+		"Mojolicious" => 1,
+		"Geo::Distance" => 1,
+
 	}, # e.g., Module::Name => 1.1
 	ABSTRACT_FROM     => 'lib/GPS/Track.pm', # retrieve abstract from module
 	AUTHOR            => 'Sven Eppler <cpan@sveneppler.de>',
