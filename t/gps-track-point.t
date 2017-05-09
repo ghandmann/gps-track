@@ -94,6 +94,8 @@ sub pointsEqual {
 
 	# always equal
 	is($pointA->equals($pointA), 1, "points equal");
+
+	throws_ok { $pointA->equals("something"); } qr/not a GPS::Track::Point/;
 }
 
 sub pointDistances {
