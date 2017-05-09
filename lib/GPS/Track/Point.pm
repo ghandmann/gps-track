@@ -4,7 +4,7 @@ use Mojo::Base -base;
 use Scalar::Util qw/blessed/;
 use Geo::Distance;
 
-has ["lon", "lat", "ele", "bpm", "cad" ] => undef;
+has ["lon", "lat", "ele", "spd", "bpm", "cad" ] => undef;
 
 has geoDistance => sub { return Geo::Distance->new(); };
 
@@ -52,6 +52,7 @@ sub equals {
 	my $equal =	$self->lon == $other->lon &&
 					$self->lat == $other->lat &&
 					$self->ele == $other->ele &&
+					$self->spd == $other->spd &&
 					$self->cad == $other->cad &&
 					$self->bpm == $other->bpm;
 
@@ -99,6 +100,13 @@ C<GPS::Track::Point> is a thin module representing a Point as parsed by L<GPS::T
 
    my $ele = $point->ele;
    $point = $point->ele(8848);
+
+=head2 spd
+
+The speed at this point, measured in meter per second.
+
+   my $spd = $point->spd;
+   my $point = $point->spd(10);
 
 =head2 cad
 

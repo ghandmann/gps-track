@@ -22,6 +22,7 @@ sub simplePoint {
 	ok($point->can("ele"), "point can ele");
 	ok($point->can("bpm"), "point can bpm");
 	ok($point->can("cad"), "point can cad");
+	ok($point->can("spd"), "point can spd");
 	# Methods
 	ok($point->can("equals"), "point can equals");
 
@@ -30,10 +31,11 @@ sub simplePoint {
 	is($point->ele, undef, "ele is undef");
 	is($point->bpm, undef, "bpm is undef");
 	is($point->cad, undef, "cad is undef");
+	is($point->spd, undef, "spd is undef");
 }
 
 sub pointConstructor {
-	my @arrayInit = (lon => 12, lat => 17, ele => 8848, bpm => 60, cad => 90);
+	my @arrayInit = (lon => 12, lat => 17, ele => 8848, bpm => 60, cad => 90, spd => 10);
 	my $hashRefInit = {@arrayInit};
 
 	my $pointIsGood = sub {
@@ -43,6 +45,7 @@ sub pointConstructor {
 		is($point->ele, 8848);
 		is($point->bpm, 60);
 		is($point->cad, 90);
+		is($point->spd, 10);
 	};
 	
 	note("point constructor with hashref");
@@ -76,7 +79,7 @@ sub pointSettersGetters {
 }
 
 sub pointsEqual {
-	my $initA = { lon => 12, lat => 13, ele => 8848, cad => 0, bpm => 0 };
+	my $initA = { lon => 12, lat => 13, ele => 8848, cad => 0, bpm => 0, spd => 10 };
 	my $initB = { lon => -12, lat => 9, ele => 0, cad => 70, bpm => 120 };
 	my $pointA = GPS::Track::Point->new($initA);
 	my $pointB = GPS::Track::Point->new($initB);
