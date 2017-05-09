@@ -4,9 +4,7 @@ perl:
    - "5.22"
    - "5.20"
    - "5.18"
-install:
+before_install:
    - cpanm --notest --skip-satisfied Devel::Cover::Report::Coveralls
-   - cpanm --quiet --installdeps --notest .
-after_success:
-   - cover -test
-   - cover -report coveralls
+script:
+   perl Makefile.PL && make && cover -test -report coveralls
