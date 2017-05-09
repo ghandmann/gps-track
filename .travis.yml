@@ -5,8 +5,8 @@ perl:
    - "5.20"
    - "5.18"
 before_install:
+   - sudo apt-get -qq update
+   - sudo apt-get install -y gpsbabel
    - cpanm --notest --skip-satisfied Devel::Cover::Report::Coveralls
-   - apt-get -qq update
-   - apt-get install -y gpsbabel
 script:
    perl Makefile.PL && make && cover -test -report coveralls
