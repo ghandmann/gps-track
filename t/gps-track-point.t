@@ -12,6 +12,7 @@ subtest(pointConstructor => \&pointConstructor);
 subtest(pointSettersGetters => \&pointSettersGetters);
 subtest(pointsEqual => \&pointsEqual);
 subtest(pointDistances => \&pointDistances);
+subtest(timeHandling => \&timeHandling);
 
 sub simplePoint {
 	my $point = GPS::Track::Point->new();
@@ -23,6 +24,7 @@ sub simplePoint {
 	ok($point->can("bpm"), "point can bpm");
 	ok($point->can("cad"), "point can cad");
 	ok($point->can("spd"), "point can spd");
+	ok($point->can("time"), "point can time");
 	# Methods
 	ok($point->can("equals"), "point can equals");
 
@@ -32,6 +34,7 @@ sub simplePoint {
 	is($point->bpm, undef, "bpm is undef");
 	is($point->cad, undef, "cad is undef");
 	is($point->spd, undef, "spd is undef");
+	is($point->time, undef, "time is undef");
 }
 
 sub pointConstructor {
@@ -124,6 +127,13 @@ sub pointDistances {
 
 	throws_ok { $pointA->distanceTo({ }); } qr/other.*missing.*lon/;
 	throws_ok { $pointA->distanceTo({ lon => 12 }); } qr/other.*missing.*lat/;
+}
+
+sub timeHandling {
+	my $point = GPS::Track::Point->new();
+
+	$point->time("2015-01-20T13:26:57.000Z");
+	is($point->time, "2015-01-20T13:26:57.000Z");
 }
 
 done_testing;

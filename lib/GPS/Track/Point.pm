@@ -4,9 +4,23 @@ use Mojo::Base -base;
 use Scalar::Util qw/blessed/;
 use Geo::Distance;
 
-has ["lon", "lat", "ele", "spd", "bpm", "cad" ] => undef;
-
+has ["lon", "lat", "ele", "time", "spd", "bpm", "cad" ] => undef;
 has geoDistance => sub { return Geo::Distance->new(); };
+
+sub handleTime {
+	my $self = shift;
+	my $timestamp = shift;
+
+	if(defined $timestamp) {
+		warn "parsing timestamp=$timestamp";
+		my $dt = DateTime::Format::ISO8601->parse_datetime($timestamp);
+		$self->{time} = $dt;
+		return $self;
+	}
+	else {
+		return $self->{time};
+	}
+}
 
 sub distanceTo {
 	my $self = shift;
@@ -51,6 +65,7 @@ sub equals {
 
 	my $equal =	$self->lon == $other->lon &&
 					$self->lat == $other->lat &&
+					$self->time == $other->time &&
 					$self->ele == $other->ele &&
 					$self->spd == $other->spd &&
 					$self->cad == $other->cad &&
@@ -95,6 +110,15 @@ C<GPS::Track::Point> is a thin module representing a Point as parsed by L<GPS::T
 
    my $lat = $point->lat;
    $point = $point->lat(9);
+
+=head2 time
+
+This is currently a really dump getter/setter which just returns, what was passed in.
+
+Future version will accepts various datetime-formats and return a L<DateTime> object.
+
+   my $time = $point->time;
+   my $point = $point->time("2015-01-20T13:26:57.000Z");
 
 =head2 ele
 

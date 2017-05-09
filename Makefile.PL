@@ -8,6 +8,8 @@ WriteMakefile(
 	PREREQ_PM         => {
 		"Mojolicious" => 0,
 		"Geo::Distance" => 0,
+		"XML::Simple" => 0,
+		"XML::SAX::ExpatXS" => 0, # this may require libexpat1-dev on your system.
 	}, # e.g., Module::Name => 1.1
 	TEST_REQUIRES => {
 		"Test::More" => 0,

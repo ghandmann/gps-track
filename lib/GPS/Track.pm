@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Mojo::Base -base;
 use Mojo::File;
+use XML::Simple;
 
 has "onPoint" => undef;
 
@@ -46,6 +47,29 @@ sub convert {
 sub parseTCX {
 	my $self = shift;
 	my $xml = shift;
+
+	# use a faster parser
+	$XML::Simple::PREFERRED_PARSER = "XML::SAX::ExpatXS";
+
+	my @options = ( ForceArray => ['Course', 'Trackpoint'] );
+	my $data = XMLin($xml, @options);
+
+	my @courses = @{$data->{Courses}->{Course}};
+
+	foreach my $course (@courses) {
+		my @trackpoints = @{$course->{Track}->{Trackpoint}};
+		foreach my $p (@trackpoints) {
+			my $gpsTrackPoint = GPS::Track::Point->new(
+				lat => $p->{Position}->{LatitudeDegrees},
+				lon => $p->{Position}->{LongitudeDegrees},
+				time => $p->{Time},
+				ele => $p->{AltitudeMeters} || undef,
+				spd => $p->{Extensions}->{TPX}->{Speed} || undef,
+				bpm => $p->{HeartRateBpm}->{Value} || undef,
+				cad => $p->{Cadence} || undef,
+			);
+		}
+	}
 }
 
 sub identify {
