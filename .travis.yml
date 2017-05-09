@@ -6,6 +6,7 @@ perl:
    - "5.18"
 install:
    - cpanm --notest --skip-satisfied Devel::Cover::Report::Coveralls
+   - cpanm --quiet --installdeps --notest .
 after_success:
    - cover -test
    - cover -report coveralls
