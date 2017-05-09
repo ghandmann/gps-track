@@ -5,6 +5,7 @@ perl:
    - "5.20"
    - "5.18"
 before_install:
+   - sudo add-apt-repository ppa:olithered/gpsbabel
    - sudo apt-get -qq update
    - sudo apt-get install -y gpsbabel
    - cpanm --notest --skip-satisfied Devel::Cover::Report::Coveralls
