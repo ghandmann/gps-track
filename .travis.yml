@@ -4,3 +4,8 @@ perl:
    - "5.22"
    - "5.20"
    - "5.18"
+install:
+   - cpanm --notest --skip-satisfied Devel::Cover::Report::Coveralls
+after_success:
+   - cover -test
+   - cover -report coveralls
