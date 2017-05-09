@@ -15,7 +15,7 @@ sub parse {
 	my $file = shift;
 
 	my $tcx = $self->convert($file);
-
+	return $self->parseTCX($tcx);
 }
 
 sub convert {
@@ -30,17 +30,17 @@ sub convert {
 	if($format eq "gpx") {
 		$xml = $self->_convertGPX($file);
 	}
-	elsif($format eq "FIT") {
+	elsif($format eq "fit") {
 		$xml = $self->_convertFIT($file);
 	}
-	elsif($format eq "TCX") {
+	elsif($format eq "tcx") {
 		$xml = $self->_convertTCX($file);
 	}
 	else {
 		die "File '$file' has an unkown dataformat!";
 	}
 
-	return $self->parseTCX($xml);
+	return $xml;
 }
 
 sub parseTCX {
@@ -52,23 +52,41 @@ sub identify {
 	my $self = shift;
 	my $filename = shift;
 
-	my ($suffix) = ($filename =~ /\.(\w+)$/);
+	my $suffix = undef;
+	if($filename =~ /\.(\w+)$/) {
+	  $suffix = lc($1);
+	}
 
 	return $suffix;
 }
 
 sub _convertFIT {
-	die "Not yet implemented!";
+	my $self = shift;
+	my $file = shift;
+	$self->gpsbabel_convert("garmin_fit", $file);
 }
 
 sub _convertGPX {
-	die "Not yet implemented!";
+	my $self = shift;
+	my $file = shift;
+	return $self->gpsbabel_convert("gpx", $file);
 }
 
 sub _convertTCX {
+	my $self = shift;
 	my $file = shift;
 
-	return Mojo::File->new($file)->slurp;
+	# TCX is already target format, just slurp and return
+	return Mojo::File->new($file)->slurp();
+}
+
+sub gpsbabel_convert {
+	my $self = shift;
+	my $sourceFormat = quotemeta(shift);
+	my $file = quotemeta(shift);
+
+	my $tcx = `gpsbabel -i $sourceFormat -f $file -o gtrnctr -F -`;
+	return $tcx;
 }
 
 1;
