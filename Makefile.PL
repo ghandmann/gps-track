@@ -14,6 +14,7 @@ WriteMakefile(
 	TEST_REQUIRES => {
 		"Test::More" => 0,
 		"Test::Exception" => 0,
+		"Version::Compare" => 0,
 	},
 	ABSTRACT_FROM     => 'lib/GPS/Track.pm', # retrieve abstract from module
 	AUTHOR            => 'Sven Eppler <cpan@sveneppler.de>',
