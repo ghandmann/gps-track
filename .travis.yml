@@ -9,13 +9,7 @@ before_install:
    - sudo add-apt-repository ppa:olithered/gpsbabel -y
    - sudo apt-get -qq update
    - sudo apt-get install -y gpsbabel
-   - cpan-install --coverage
-
-before_script:
-   - coverage-setup
-
-after_success:
-   - coverage-report
+   - eval $(curl https://travis-perl.github.io/init) --auto
 
 matrix:
    include:
