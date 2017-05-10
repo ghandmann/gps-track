@@ -4,3 +4,5 @@ GPS::Track [![Build Status](https://travis-ci.org/ghandmann/gps-track.svg?branch
 A simple Perl Module to parse common GPS-Tracks as created by many Sportstrackers with heavy help of GPSBabel.
 
 Early Alpha! Use at your own risk!
+
+This change is only here, to trigger a pull request. :)
