@@ -4,12 +4,6 @@ use DateTime::Format::ISO8601;
 
 BEGIN { use_ok("GPS::Track"); }
 
-my $track = GPS::Track->new();
-is($track->onPoint, undef, "no onPoint callback defined");
-
-throws_ok { $track->parse(); } qr/No file/, "throws without a file";
-throws_ok { $track->parse("/a/file/never/to/exist/file.extension"); } qr/does not exist/, "cannot find that file";
-
 subtest(testConstructor => \&testConstructor);
 subtest(testOnPoint => \&testOnPoint);
 subtest(testIdentify => \&testIdentify);
@@ -24,6 +18,10 @@ sub testConstructor {
 	ok($track->isa("GPS::Track"), "constructor with valid onPoint callback is good");
 
 	throws_ok { GPS::Track->new(onPoint => "test"); } qr/not a code/i;
+	
+	throws_ok { $track->parse(); } qr/No file/, "throws without a file";
+	throws_ok { $track->parse("/a/file/never/to/exist/file.extension"); } qr/does not exist/, "cannot find that file";
+	ok($track->parse("./t/files/minimal.tcx"), "happy-path usage");
 }
 
 sub testOnPoint {
