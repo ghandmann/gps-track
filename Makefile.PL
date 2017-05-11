@@ -10,6 +10,8 @@ WriteMakefile(
 		"Geo::Distance" => 0,
 		"XML::Simple" => 0,
 		"XML::SAX::ExpatXS" => 0, # this may require libexpat1-dev on your system.
+		"DateTime" => 0,
+		"DateTime::Format::ISO8601" => 0,
 	}, # e.g., Module::Name => 1.1
 	TEST_REQUIRES => {
 		"Test::More" => 0,
