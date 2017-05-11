@@ -27,21 +27,6 @@ has "geoDistance" => (
 	default => sub { return Geo::Distance->new(); },
 );
 
-sub handleTime {
-	my $self = shift;
-	my $timestamp = shift;
-
-	if(defined $timestamp) {
-		warn "parsing timestamp=$timestamp";
-		my $dt = DateTime::Format::ISO8601->parse_datetime($timestamp);
-		$self->{time} = $dt;
-		return $self;
-	}
-	else {
-		return $self->{time};
-	}
-}
-
 sub distanceTo {
 	my $self = shift;
 	my $other = shift;
