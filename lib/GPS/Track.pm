@@ -3,9 +3,11 @@ package GPS::Track;
 use 5.018000;
 use strict;
 use warnings;
+use GPS::Track::Point;
 use Mojo::Base -base;
 use Mojo::File;
 use XML::Simple;
+use Try::Tiny;
 
 has "onPoint" => undef;
 
@@ -56,20 +58,31 @@ sub parseTCX {
 
 	my @courses = @{$data->{Courses}->{Course}};
 
+	my @retval;
+
 	foreach my $course (@courses) {
 		my @trackpoints = @{$course->{Track}->{Trackpoint}};
 		foreach my $p (@trackpoints) {
+			my $time = undef;
+			try {
+				$time = DateTime::Format::ISO8601->parse_datetime($p->{Time});
+			};
+
 			my $gpsTrackPoint = GPS::Track::Point->new(
 				lat => $p->{Position}->{LatitudeDegrees},
 				lon => $p->{Position}->{LongitudeDegrees},
-				time => $p->{Time},
+				time => $time,
 				ele => $p->{AltitudeMeters} || undef,
 				spd => $p->{Extensions}->{TPX}->{Speed} || undef,
 				bpm => $p->{HeartRateBpm}->{Value} || undef,
 				cad => $p->{Cadence} || undef,
 			);
+
+			push(@retval, $gpsTrackPoint);
 		}
 	}
+
+	return @retval;
 }
 
 sub identify {

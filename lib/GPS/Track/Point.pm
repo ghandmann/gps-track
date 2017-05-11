@@ -85,9 +85,7 @@ sub equals {
 
 	my $equal = 1;
 
-
-	my @attributes = qw/lon lat ele time spd cad bpm/;
-	foreach my $attr (@attributes) {
+	foreach my $attr ($self->attributes) {
 		my $me = $self->$attr();
 		my $other = $other->$attr();
 
@@ -101,6 +99,19 @@ sub equals {
 	}
 
 	return $equal;
+}
+sub toString {
+	my $self = shift;
+	my @parts;
+	foreach my $attr ($self->attributes) {
+		push(@parts, "$attr=" . defined($self->$attr()) ? $self->$attr() : "undef");
+	}
+
+	return join(" ", @parts);
+}
+
+sub attributes {
+	return qw/lon lat time ele spd cad bpm/;
 }
 
 1;
