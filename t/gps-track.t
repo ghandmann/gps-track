@@ -43,9 +43,6 @@ sub testConvert {
 }
 
 sub testParseTCX {
-	my $track = GPS::Track->new();
-	my @points = $track->parseTCX(getMinimalTCX());
-	is(scalar(@points), 1, "parser returned one point");
 
 	my $refPoint = GPS::Track::Point->new(
 		lat => 48.2256215,
@@ -57,7 +54,19 @@ sub testParseTCX {
 		spd => 3.382
 	);
 
+	my $onPointCallbackFired = 0;
+
+	my $track = GPS::Track->new(onPoint => sub {
+			my $callbackPoint = shift;
+			ok($callbackPoint == $refPoint, "callbackpoint equals refpoint");
+			$onPointCallbackFired = 1;
+	});
+
+	my @points = $track->parseTCX(getMinimalTCX());
+	is(scalar(@points), 1, "parser returned one point");
+
 	ok($refPoint == $points[0], "parsed point matches expectation");
+	is($onPointCallbackFired, 1, "the onPoint callback got triggered");
 }
 
 sub getMinimalTCX {

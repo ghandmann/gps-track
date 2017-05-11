@@ -78,6 +78,9 @@ sub parseTCX {
 				cad => $p->{Cadence} || undef,
 			);
 
+			if(defined($self->onPoint)) {
+				$self->onPoint()->($gpsTrackPoint);
+			}
 			push(@retval, $gpsTrackPoint);
 		}
 	}
@@ -113,8 +116,7 @@ sub _convertTCX {
 	my $self = shift;
 	my $file = shift;
 
-	# TCX is already target format, just slurp and return
-	return Mojo::File->new($file)->slurp();
+	$self->gpsbabel_convert("gtrnctr", $file);
 }
 
 sub gpsbabel_convert {
