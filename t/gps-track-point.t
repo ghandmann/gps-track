@@ -87,9 +87,11 @@ sub pointsEqual {
 	my $pointB = GPS::Track::Point->new($initB);
 
 	is($pointA->equals($pointB), 0, "points aren't equal");
+	ok($pointA != $pointB, "operator!= works too");
 
 	$pointB = GPS::Track::Point->new($initA);
 	is($pointA->equals($pointB), 1, "points are equal");
+	ok($pointA == $pointB, "operator== works too");
 
 	$pointB->lon(0);
 	is($pointA->equals($pointB), 0, "points aren't equal");
@@ -106,6 +108,7 @@ sub pointsEqual {
 	is($pointA->equals($pointA), 1, "points equal");
 
 	throws_ok { $pointA->equals("something"); } qr/not a GPS::Track::Point/;
+
 }
 
 sub pointDistances {

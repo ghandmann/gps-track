@@ -4,6 +4,10 @@ use Moo;
 use Scalar::Util qw/blessed/;
 use Geo::Distance;
 
+use overload
+	'!=' => sub { !shift->equals(shift) },
+	'==' => \&equals;
+
 has ["lon", "lat", "ele", "spd", "bpm", "cad" ] => (
 	is => "rw",
 	default => undef
