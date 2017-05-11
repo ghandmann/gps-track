@@ -79,15 +79,24 @@ sub equals {
 		die "First argument not a GPS::Track::Point!";
 	}
 
-	my $equal =	$self->lon == $other->lon &&
-					$self->lat == $other->lat &&
-					$self->time == $other->time &&
-					$self->ele == $other->ele &&
-					$self->spd == $other->spd &&
-					$self->cad == $other->cad &&
-					$self->bpm == $other->bpm;
+	my $equal = 1;
 
-	return $equal ? 1 : 0;
+
+	my @attributes = qw/lon lat ele time spd cad bpm/;
+	foreach my $attr (@attributes) {
+		my $me = $self->$attr();
+		my $other = $other->$attr();
+
+		my $bothDefined = defined($me) && defined($other);
+		my $onlyOneDefined = defined($me) ^ defined($other);
+
+		if($onlyOneDefined || ($bothDefined && $me != $other)) {
+				$equal = 0;
+				last;
+		}
+	}
+
+	return $equal;
 }
 
 1;
