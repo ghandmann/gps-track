@@ -1,11 +1,27 @@
 package GPS::Track::Point;
 
-use Mojo::Base -base;
+use Moo;
 use Scalar::Util qw/blessed/;
 use Geo::Distance;
 
-has ["lon", "lat", "ele", "time", "spd", "bpm", "cad" ] => undef;
-has geoDistance => sub { return Geo::Distance->new(); };
+has ["lon", "lat", "ele", "spd", "bpm", "cad" ] => (
+	is => "rw",
+	default => undef
+);
+
+has "time" => (
+	is => "rw",
+	default => undef,
+	isa => sub {
+		my $val = shift;
+		die "Not a DateTime object!" if(defined($val) && !$val->isa("DateTime"));
+	}
+);
+
+has "geoDistance" => (
+	is => "ro",
+	default => sub { return Geo::Distance->new(); },
+);
 
 sub handleTime {
 	my $self = shift;

@@ -3,6 +3,7 @@ use Test::Exception;
 use strict;
 use warnings;
 use Geo::Distance;
+use DateTime;
 
 BEGIN { use_ok("GPS::Track::Point"); }
 
@@ -63,21 +64,19 @@ sub pointConstructor {
 sub pointSettersGetters {
 	my $point = GPS::Track::Point->new();
 
-	# Setters use the "fluent interface" design
-	# therefore returning self
-	$point = $point->lon(10);
+	$point->lon(10);
 	is($point->lon, 10);
 
-	$point = $point->lat(20);
+	$point->lat(20);
 	is($point->lat(), 20);
 
-	$point = $point->ele(8848);
+	$point->ele(8848);
 	is($point->ele, 8848);
 
-	$point = $point->bpm(120);
+	$point->bpm(120);
 	is($point->bpm, 120);
 
-	$point = $point->cad(75);
+	$point->cad(75);
 	is($point->cad, 75);
 }
 
@@ -132,8 +131,15 @@ sub pointDistances {
 sub timeHandling {
 	my $point = GPS::Track::Point->new();
 
-	$point->time("2015-01-20T13:26:57.000Z");
-	is($point->time, "2015-01-20T13:26:57.000Z");
+	my $dt = DateTime->now;
+
+	$point->time($dt);
+	is($point->time->iso8601, $dt->iso8601);
+
+	throws_ok { $point->time("something"); } qr/not a datetime/i;
+
+	$point->time(undef);
+	is($point->time(), undef, "can still be undef");
 }
 
 done_testing;
