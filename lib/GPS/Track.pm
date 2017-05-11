@@ -44,12 +44,13 @@ sub parse {
 	return $self->parseTCX($tcx);
 }
 
-sub convert {
+sub convert { 
 	my $self = shift;
 
 	my $file = shift or die "No file supplied to parse!";
 	die "The file '$file' does not exist!" unless(-e $file);
 
+	# identify dies on unknown formats!
 	my $format = $self->identify($file);
 
 	my $xml = undef;
@@ -61,9 +62,6 @@ sub convert {
 	}
 	elsif($format eq "tcx") {
 		$xml = $self->_convertTCX($file);
-	}
-	else {
-		die "File '$file' has an unkown dataformat!";
 	}
 
 	return $xml;
@@ -117,10 +115,18 @@ sub identify {
 	my $self = shift;
 	my $filename = shift;
 
-	my $suffix = undef;
+	my $suffix = "";
 	if($filename =~ /\.(\w+)$/) {
 	  $suffix = lc($1);
 	}
+
+	my %validSuffixes = (
+		gpx => 1,
+		fit => 1,
+		tcx => 1,
+	);
+
+	die "File '$filename' has an unknown dataformat!" unless(exists $validSuffixes{$suffix});
 
 	return $suffix;
 }

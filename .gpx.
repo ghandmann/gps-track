@@ -53,9 +53,9 @@ sub testIdentify {
 	is($track->identify(".gpx"), "gpx");
 	is($track->identify("some.GPX"), "gpx");
 
-	throws_ok { $track->identify("invalid.file_extension"); } qr/unknown dataformat/i, "invalid.file_extension";
-	throws_ok { $track->identify("noSuffix"); } qr/unknown dataformat/i, "no suffix";
-	throws_ok { $track->identify("file.gpx."); } qr/unknown dataformat/i, "file.gpx.";
+	throws_ok { $track->identify("invalid.file_extension"); } qr/invalid dataformat/i;
+	throws_ok { $track->identify("noSuffix"); } qr/invalid dataformat/i;
+	throws_ok { $track->identify("file.gpx."); } qr/invalid dataformat/i;
 }
 
 sub testConvert {
