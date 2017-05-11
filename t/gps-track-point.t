@@ -87,15 +87,20 @@ sub pointsEqual {
 	my $pointB = GPS::Track::Point->new($initB);
 
 	is($pointA->equals($pointB), 0, "points aren't equal");
-	is($pointB->equals($pointA), 0, "points aren't equal");
 
 	$pointB = GPS::Track::Point->new($initA);
 	is($pointA->equals($pointB), 1, "points are equal");
-	is($pointB->equals($pointA), 1, "points are equal");
 
 	$pointB->lon(0);
 	is($pointA->equals($pointB), 0, "points aren't equal");
-	is($pointB->equals($pointA), 0, "points aren't equal");
+
+	# special handling for undef values
+	$pointB->lon(undef);
+	is($pointA->equals($pointB), 0, "points aren't equal");
+
+	$pointA->lon(undef);
+	is($pointA->equals($pointB), 1, "points aren't equal");
+
 
 	# always equal
 	is($pointA->equals($pointA), 1, "points equal");
