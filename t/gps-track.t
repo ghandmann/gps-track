@@ -11,10 +11,39 @@ is($track->onPoint, undef, "no onPoint callback defined");
 throws_ok { $track->parse(); } qr/No file/, "throws without a file";
 throws_ok { $track->parse("/a/file/never/to/exist/file.extension"); } qr/does not exist/, "cannot find that file";
 
+subtest(testConstructor => \&testConstructor);
+subtest(testOnPoint => \&testOnPoint);
 subtest(testIdentify => \&testIdentify);
 subtest(testConvert => \&testConvert);
 subtest(testParseTCX => \&testParseTCX);
 
+sub testConstructor {
+	my $track = GPS::Track->new();
+	ok($track->isa("GPS::Track"), "default constructor is good");
+
+	$track = GPS::Track->new(onPoint => sub { });
+	ok($track->isa("GPS::Track"), "constructor with valid onPoint callback is good");
+
+	throws_ok { GPS::Track->new(onPoint => "test"); } qr/not a code/i;
+}
+
+sub testOnPoint {
+	my $ref = sub { };
+
+	my $track = GPS::Track->new();
+	is($track->onPoint(), undef, "no onPoint callback");
+
+	$track->onPoint($ref);
+	is($track->onPoint(), $ref, "callback is set");
+
+	$track->onPoint(undef);
+	is($track->onPoint(), undef, "callback removed");
+
+	throws_ok { $track->onPoint(1); } qr/not a code/i;
+	throws_ok { $track->onPoint("test"); } qr/not a code/i;
+	throws_ok { $track->onPoint($track); } qr/not a code/i;
+	throws_ok { $track->onPoint( { key => 1 } ); } qr/not a code/i;
+}
 
 sub testIdentify {
 	my $track = GPS::Track->new();

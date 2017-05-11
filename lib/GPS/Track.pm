@@ -3,13 +3,37 @@ package GPS::Track;
 use 5.018000;
 use strict;
 use warnings;
+use Moo;
 use GPS::Track::Point;
-use Mojo::Base -base;
 use Mojo::File;
 use XML::Simple;
 use Try::Tiny;
 
-has "onPoint" => undef;
+has "onPoint" => (
+	is => "rw",
+	isa => sub {
+		GPS::Track::_validateOnPoint(shift);
+	}
+);
+
+sub BUILD {
+	my $self = shift;
+	my $args = shift;
+
+	if(exists $args->{onPoint}) {
+		GPS::Track::_validateOnPoint($args->{onPoint});
+	}
+
+	return $args;
+}
+
+sub _validateOnPoint {
+	my $candidate = shift;
+
+	if(defined($candidate) && ref($candidate) ne "CODE") {
+		die "Not a CODE-Ref to onPoint!"
+	}
+}
 
 our $VERSION = '0.01';
 
@@ -63,6 +87,7 @@ sub parseTCX {
 	foreach my $course (@courses) {
 		my @trackpoints = @{$course->{Track}->{Trackpoint}};
 		foreach my $p (@trackpoints) {
+			# Parse the ISO8601 DateTime
 			my $time = undef;
 			try {
 				$time = DateTime::Format::ISO8601->parse_datetime($p->{Time});
@@ -78,9 +103,10 @@ sub parseTCX {
 				cad => $p->{Cadence} || undef,
 			);
 
-			if(defined($self->onPoint)) {
-				$self->onPoint()->($gpsTrackPoint);
-			}
+			# fire onPoint Callback
+			$self->onPoint()->($gpsTrackPoint) if(defined($self->onPoint));
+
+			# push back point
 			push(@retval, $gpsTrackPoint);
 		}
 	}
