@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use Moo;
 use GPS::Track::Point;
-use Mojo::File;
 use XML::Simple;
 use Try::Tiny;
 

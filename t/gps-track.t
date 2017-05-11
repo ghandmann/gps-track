@@ -1,6 +1,5 @@
 use Test::More;
 use Test::Exception;
-use Mojo::File;
 use DateTime::Format::ISO8601;
 
 BEGIN { use_ok("GPS::Track"); }
@@ -99,7 +98,13 @@ sub testParseTCX {
 }
 
 sub getMinimalTCX {
-	return Mojo::File->new("./t/files/minimal.tcx")->slurp();
+	return slurp("./t/files/minimal.tcx");
+}
+
+sub slurp {
+	my $file = shift;
+	local $/;
+	return <"$file">;
 }
 
 

@@ -6,7 +6,6 @@ WriteMakefile(
 	NAME              => 'GPS::Track',
 	VERSION_FROM      => 'lib/GPS/Track.pm', # finds $VERSION, requires EU::MM from perl >= 5.5
 	PREREQ_PM         => {
-		"Mojolicious" => 0,
 		"Moo" => 0,
 		"Geo::Distance" => 0,
 		"XML::Simple" => 0,
