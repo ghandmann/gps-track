@@ -89,7 +89,8 @@ sub toString {
 	my $self = shift;
 	my @parts;
 	foreach my $attr ($self->attributes) {
-		push(@parts, "$attr=" . defined($self->$attr()) ? $self->$attr() : "undef");
+		my $value = $self->$attr();
+		push(@parts, "$attr=" . (defined($value) ? $value : "undef"));
 	}
 
 	return join(" ", @parts);

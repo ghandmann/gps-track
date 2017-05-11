@@ -14,6 +14,7 @@ subtest(pointSettersGetters => \&pointSettersGetters);
 subtest(pointsEqual => \&pointsEqual);
 subtest(pointDistances => \&pointDistances);
 subtest(timeHandling => \&timeHandling);
+subtest(toString => \&testToString);
 
 sub simplePoint {
 	my $point = GPS::Track::Point->new();
@@ -151,6 +152,11 @@ sub timeHandling {
 
 	$point->time(undef);
 	is($point->time(), undef, "can still be undef");
+}
+
+sub testToString {
+	my $point = GPS::Track::Point->new(lon => 12, lat => 13, ele => 8848);
+	ok(length($point->toString()) > 0, "at least there is something");
 }
 
 done_testing;
