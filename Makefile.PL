@@ -13,6 +13,7 @@ WriteMakefile(
 		"XML::SAX::ExpatXS" => 0, # this may require libexpat1-dev on your system.
 		"DateTime" => 0,
 		"DateTime::Format::ISO8601" => 0,
+		"Try::Tiny" => 0,
 	}, # e.g., Module::Name => 1.1
 	TEST_REQUIRES => {
 		"Test::More" => 0,

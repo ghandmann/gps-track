@@ -1,5 +1,7 @@
 use Test::More;
 use Test::Exception;
+use Mojo::File;
+use DateTime::Format::ISO8601;
 
 BEGIN { use_ok("GPS::Track"); }
 
@@ -11,6 +13,7 @@ throws_ok { $track->parse("/a/file/never/to/exist/file.extension"); } qr/does no
 
 subtest(testIdentify => \&testIdentify);
 subtest(testConvert => \&testConvert);
+subtest(testParseTCX => \&testParseTCX);
 
 
 sub testIdentify {
@@ -39,9 +42,27 @@ sub testConvert {
 	ok($xml =~ /TrainingCenterDatabase/, "from fit, looks like a TCX file now");
 }
 
-sub testParse {
+sub testParseTCX {
 	my $track = GPS::Track->new();
+	my @points = $track->parseTCX(getMinimalTCX());
+	is(scalar(@points), 1, "parser returned one point");
 
+	my $refPoint = GPS::Track::Point->new(
+		lat => 48.2256215,
+		lon => 9.0323674,
+		ele => 799.8,
+		time => DateTime::Format::ISO8601->parse_datetime("2017-05-10T16:06:58Z"),
+		cad => 95,
+		bpm => 91,
+		spd => 3.382
+	);
+
+	ok($refPoint == $points[0], "parsed point matches expectation");
 }
+
+sub getMinimalTCX {
+	return Mojo::File->new("./t/files/minimal.tcx")->slurp();
+}
+
 
 done_testing;
