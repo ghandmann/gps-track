@@ -134,6 +134,9 @@ sub pointDistances {
 
 	throws_ok { $pointA->distanceTo({ }); } qr/other.*missing.*lon/;
 	throws_ok { $pointA->distanceTo({ lon => 12 }); } qr/other.*missing.*lat/;
+
+	throws_ok { $pointA->distanceTo("Hello"); } qr/is not a hash/i;
+	throws_ok { $pointA->distanceTo(DateTime->now()); } qr/is not a GPS::Track::Point/i;
 }
 
 sub timeHandling {
