@@ -95,6 +95,19 @@ sub toString {
 
 	return join(" ", @parts);
 }
+sub toHash {
+	my $self = shift;
+	my $data = {};
+	
+	foreach my $attr ($self->attributes) {
+		my $value = $self->$attr();
+		if(defined($value)) {
+			$data->{$attr} = $value;
+		}
+	}
+
+	return $data;
+}
 
 sub attributes {
 	return qw/lon lat time ele spd cad bpm/;

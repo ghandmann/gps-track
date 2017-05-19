@@ -1,5 +1,6 @@
 use Test::More;
 use Test::Exception;
+use Test::Deep;
 use strict;
 use warnings;
 use Geo::Distance;
@@ -15,6 +16,7 @@ subtest(pointsEqual => \&pointsEqual);
 subtest(pointDistances => \&pointDistances);
 subtest(timeHandling => \&timeHandling);
 subtest(toString => \&testToString);
+subtest(toHash => \&testToHash);
 
 sub simplePoint {
 	my $point = GPS::Track::Point->new();
@@ -159,4 +161,36 @@ sub testToString {
 	ok(length($point->toString()) > 0, "at least there is something");
 }
 
+sub testToHash {
+	my $point = GPS::Track::Point->new();
+	cmp_deeply($point->toHash(), {}, "Empty hash");
+
+	my $expected = {
+		lon => 12,
+		lat => 13,
+		ele => 1234
+	};
+
+	$point->lon(12);
+	$point->lat(13);
+	$point->ele(1234);
+
+	cmp_deeply($point->toHash(), $expected, "lon, lat and ele work");
+
+	$expected->{cad} = 90;
+	$expected->{bpm} = 120;
+	$expected->{spd} = 3;
+
+	$point->cad(90);
+	$point->bpm(120);
+	$point->spd(3);
+
+	cmp_deeply($point->toHash(), $expected, "added cad, bpm and spd without trouble");
+
+	$point->spd(undef);
+	delete($expected->{spd});
+
+	cmp_deeply($point->toHash(), $expected, "spd vanished as expected");
+	
+}
 done_testing;
