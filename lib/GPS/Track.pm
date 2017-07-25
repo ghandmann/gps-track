@@ -161,8 +161,6 @@ sub gpsbabel_convert {
 
 1;
 __END__
-# Below is stub documentation for your module. You'd better edit it!
-
 =head1 NAME
 
 GPS::Track - Perl extension for parsing GPS Tracks
@@ -183,6 +181,8 @@ GPS::Track tries to parse common GPS Tracks recorded by diffrent GPS/Sports trac
 
 Under the hood the conversion is done by calling gpsbabel on your system.
 
+B<WARNING:> This is a early Alpha! Use at your own risk!
+
 =head1 ATTRIBUTES
 
 =head2 onPoint
@@ -190,6 +190,8 @@ Under the hood the conversion is done by calling gpsbabel on your system.
 Callback which gets called for every parsed L<GPS::Track::Point>. Gets the parsed L<GPX::Track::Point> passed as argument.
 
    $track->onPoint(sub { my $trackPoint = shift; $trackPoint->lon; });
+
+Usefull for "in place statistics" to prevent useless looping over all points more than once.
 
 =head1 METHODS
 
@@ -213,16 +215,31 @@ TODO: Interpret file magic bytes.
 
    my $format = $track->identify($filename);
 
+=head1 INTERNAL METHODS
+
+=head2 _convertFIT
+
+Convert a .FIT file to TCX
+
+=head2 _convertGPX
+
+Convert .GPX file to TCX
+
+=head2 _convertTCX
+
+Convert .TCX fit to TCX
+
+This may seem "useless". But in reality GPSBabel does a lot of cleanup for us when converting TCX 2 TCX.
+
+=head2 gpsbabel_convert
+
+Calls the gpsbabel binary and fetches the result vom STDOUT and returns a string as TCX.
+
+   my $tcx = $track->gpsbabel_convert($sourceFormat, $sourceFile)
+
 =head1 SEE ALSO
 
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
+To be done.
 
 =head1 AUTHOR
 

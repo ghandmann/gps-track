@@ -60,7 +60,7 @@ sub distanceTo {
 	return $self->geoDistance->distance("meter", $self->lon, $self->lat, $otherLon, $otherLat);
 }
 
-sub equals {
+sub equals { 
 	my $self = shift;
 	my $other = shift;
 
@@ -130,7 +130,7 @@ GPS::Track::Point - Represent a Point of a GPS::Track
     my $point = GPS::Track::Point->new(lon => 12, lat => 13, ele => 8848);
     my $point = GPS::Track::Point->new( { lon => 12, lat => 13 } ); # Hashref Construction supported too
     
-    my $pointsEqual = $pointA == $pointB;
+    my $pointsEqual = $pointA == $pointB; # Watch out for floating point troubles!
     my $distance = $pointA->distanceTo($pointB);
     my $distance = $pointaA->distanceTo( { lon => 12, lat => 13 } );
 
@@ -152,12 +152,10 @@ C<GPS::Track::Point> is a thin module representing a Point as parsed by L<GPS::T
 
 =head2 time
 
-This is currently a really dump getter/setter which just returns, what was passed in.
-
-Future version will accepts various datetime-formats and return a L<DateTime> object.
+Accepts/Returns a L<DateTime>-Object or undef (if no time information is present)
 
    my $time = $point->time;
-   my $point = $point->time("2015-01-20T13:26:57.000Z");
+   my $point = $point->time(DateTime->now());
 
 =head2 ele
 
@@ -193,7 +191,7 @@ Dies if one of the points is missing lon/lat.
 
 =head2 distanceTo( { lon => X, lat => Y } )
 
-Shorthand method to get the 2D distance to a nown lon-lat-pair.
+Shorthand method to get the 2D distance to a known lon-lat-pair.
 
    my $distance = $pointA->distanceTo( { lon => 12, lat => 6 } );
 
@@ -201,15 +199,33 @@ Shorthand method to get the 2D distance to a nown lon-lat-pair.
 
 Compares to point object attribute by attribute.
 
+Equal means, that ALL atributes of both points are equal in the sense of perl. You may experience troubles with floating point precision!
+
 Return 1 for equal points, otherwise 0.
 
     my $equal = $pointA->equals($pointB);
+
+=head2 toHash()
+
+Convert the point to a plain hash ref. Only C<defined> attributes are included as keys in the hash.
+
+   my $point = GPS::Track::Point->new(lon => 1, lat => 2);
+   my $ref = $point->toHash();
+   # { lon => 1, lat => 2 }
+
+=head2 toString()
+
+Converts the point to a string representation. 
+
+   my $point = GPS::Trakc::Point->new(lon => 1, lat => 2, ele => 8848);
+   say $point->toString();
+   # lon=1 lat=2 ele=8848 time=undef cad=undef bpm=undef spd=undef
 
 =head1 OPERATORS
 
 =head2 ==
 
-Shorthand operator to call C<equals> on $pointA with $pointB as argument.
+Shorthand operator to call L</"equals-otherPoint"> on $pointA with $pointB as argument.
 
    my $areEqual = $pointA == $pointB;
    # Equivalent to $pointA->equals($pointB);
