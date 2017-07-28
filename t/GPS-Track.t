@@ -1,6 +1,7 @@
 use Test::More;
 use Test::Exception;
 use DateTime::Format::ISO8601;
+use 5.010;
 
 BEGIN { use_ok("GPS::Track"); }
 
@@ -19,6 +20,7 @@ sub testConstructor {
 
 	throws_ok { GPS::Track->new(onPoint => "test"); } qr/not a code/i;
 	
+	SkipIfNoGPSBabel();
 	throws_ok { $track->parse(); } qr/No file/, "throws without a file";
 	throws_ok { $track->parse("/a/file/never/to/exist/file.extension"); } qr/does not exist/, "cannot find that file";
 	ok($track->parse("./t/files/minimal.tcx"), "happy-path usage");
@@ -57,6 +59,8 @@ sub testIdentify {
 }
 
 sub testConvert {
+	SkipIfNoGPSBabel();
+
 	my $track = GPS::Track->new();
 	my $xml = $track->convert("./t/files/simple.gpx");
 	ok($xml =~ /TrainingCenterDatabase/, "from gpx, looks like a TCX file now");
@@ -71,6 +75,7 @@ sub testConvert {
 }
 
 sub testParseTCX {
+	SkipIfNoGPSBabel();
 
 	my $refPoint = GPS::Track::Point->new(
 		lat => 48.2256215,
@@ -107,5 +112,17 @@ sub slurp {
 	return <"$file">;
 }
 
+sub SkipIfNoGPSBabel {
+	state $GPSBABEL_AVAILABLE = undef;
+
+	if(!defined $GPSBABEL_AVAILABLE) {
+		system("which gpsbabel");
+		$GPSBABEL_AVAILABLE = ($? == 0) ? 1 : 0;
+	}
+
+	if(!$GPSBABEL_AVAILABLE) {
+		plan skip_all => "WARNING: GPSBabel not found and test requires it! Skipping test!"
+	}
+}
 
 done_testing;

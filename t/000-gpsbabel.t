@@ -4,8 +4,9 @@ use warnings;
 use Version::Compare;
 
 my $gpsbabel = `gpsbabel --version`;
-is($?, 0, "gpsbabel is installed") or BAIL_OUT "GPSBabel is required for GPS::Track! Refer to Documentation!";
-
+if($? != 0) {
+	plan skip_all => "WARNING: GPSBabel not found! Skipping GPSBabel Version Test!";
+}
 
 my ($version) = ($gpsbabel =~ /GPSBabel Version (\d+\.\d+\.\d+)/i);
 
