@@ -8,6 +8,8 @@ use GPS::Track::Point;
 use XML::Simple;
 use Try::Tiny;
 
+our $VERSION = '0.02';
+
 has "onPoint" => (
 	is => "rw",
 	isa => sub {
@@ -34,7 +36,6 @@ sub _validateOnPoint {
 	}
 }
 
-our $VERSION = '0.01';
 
 sub parse {
 	my $self = shift;
