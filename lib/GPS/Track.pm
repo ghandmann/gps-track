@@ -72,7 +72,7 @@ sub parseTCX {
 	my $xml = shift;
 
 	# use a faster parser
-	$XML::Simple::PREFERRED_PARSER = "XML::SAX::ExpatXS";
+	local $XML::Simple::PREFERRED_PARSER = "XML::SAX::ExpatXS";
 
 	my @options = ( ForceArray => ['Course', 'Trackpoint'] );
 	my $data = XMLin($xml, @options);
