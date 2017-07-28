@@ -5,106 +5,38 @@ use DateTime::Format::ISO8601;
 BEGIN { use_ok("GPS::Track"); }
 
 subtest(testConstructor => \&testConstructor);
-subtest(testOnPoint => \&testOnPoint);
-subtest(testIdentify => \&testIdentify);
-subtest(testConvert => \&testConvert);
-subtest(testParseTCX => \&testParseTCX);
+subtest(testInterface => \&testInterface);
+subtest(testDateTimeValidation => \&testDateTimeValidation);
 
 sub testConstructor {
 	my $track = GPS::Track->new();
 	ok($track->isa("GPS::Track"), "default constructor is good");
 
-	$track = GPS::Track->new(onPoint => sub { });
-	ok($track->isa("GPS::Track"), "constructor with valid onPoint callback is good");
-
-	throws_ok { GPS::Track->new(onPoint => "test"); } qr/not a code/i;
-	
-	throws_ok { $track->parse(); } qr/No file/, "throws without a file";
-	throws_ok { $track->parse("/a/file/never/to/exist/file.extension"); } qr/does not exist/, "cannot find that file";
-	ok($track->parse("./t/files/minimal.tcx"), "happy-path usage");
+	$track = GPS::Track->new(distance => 1234);
+	is($track->distance, 1234, "distance works");
 }
 
-sub testOnPoint {
-	my $ref = sub { };
-
-	my $track = GPS::Track->new();
-	is($track->onPoint(), undef, "no onPoint callback");
-
-	$track->onPoint($ref);
-	is($track->onPoint(), $ref, "callback is set");
-
-	$track->onPoint(undef);
-	is($track->onPoint(), undef, "callback removed");
-
-	throws_ok { $track->onPoint(1); } qr/not a code/i;
-	throws_ok { $track->onPoint("test"); } qr/not a code/i;
-	throws_ok { $track->onPoint($track); } qr/not a code/i;
-	throws_ok { $track->onPoint( { key => 1 } ); } qr/not a code/i;
-}
-
-sub testIdentify {
+sub testInterface {
 	my $track = GPS::Track->new();
 
-	is($track->identify("file.gpx"), "gpx");
-	is($track->identify("file.fit"), "fit");
-	is($track->identify("/some.path/with.some/file.txt.gif.tcx"), "tcx");
-	is($track->identify(".gpx"), "gpx");
-	is($track->identify("some.GPX"), "gpx");
-
-	throws_ok { $track->identify("invalid.file_extension"); } qr/unknown dataformat/i, "invalid.file_extension";
-	throws_ok { $track->identify("noSuffix"); } qr/unknown dataformat/i, "no suffix";
-	throws_ok { $track->identify("file.gpx."); } qr/unknown dataformat/i, "file.gpx.";
+	ok($track->can("distance"));
+	ok($track->can("duration"));
+	ok($track->can("start"));
+	ok($track->can("stop"));
+	ok($track->can("power"));
+	ok($track->can("kcal"));
 }
 
-sub testConvert {
-	my $track = GPS::Track->new();
-	my $xml = $track->convert("./t/files/simple.gpx");
-	ok($xml =~ /TrainingCenterDatabase/, "from gpx, looks like a TCX file now");
+sub testDateTimeValidation {
+	my $validator = \&GPS::Track::_validateDateTime;
+	my $dt = DateTime->now();
 
-	$xml = undef;
-	$xml = $track->convert("./t/files/simple.tcx");
-	ok($xml =~ /TrainingCenterDatabase/, "from tcx, looks like a TCX file now");
-
-	$xml = undef;
-	$xml = $track->convert("./t/files/sample_file.fit");
-	ok($xml =~ /TrainingCenterDatabase/, "from fit, looks like a TCX file now");
-}
-
-sub testParseTCX {
-
-	my $refPoint = GPS::Track::Point->new(
-		lat => 48.2256215,
-		lon => 9.0323674,
-		ele => 799.8,
-		time => DateTime::Format::ISO8601->parse_datetime("2017-05-10T16:06:58Z"),
-		cad => 95,
-		bpm => 91,
-		spd => 3.382
-	);
-
-	my $onPointCallbackFired = 0;
-
-	my $track = GPS::Track->new(onPoint => sub {
-			my $callbackPoint = shift;
-			ok($callbackPoint == $refPoint, "callbackpoint equals refpoint");
-			$onPointCallbackFired = 1;
-	});
-
-	my @points = $track->parseTCX(getMinimalTCX());
-	is(scalar(@points), 1, "parser returned one point");
-
-	ok($refPoint == $points[0], "parsed point matches expectation");
-	is($onPointCallbackFired, 1, "the onPoint callback got triggered");
-}
-
-sub getMinimalTCX {
-	return slurp("./t/files/minimal.tcx");
-}
-
-sub slurp {
-	my $file = shift;
-	local $/;
-	return <"$file">;
+	lives_ok { $validator->(undef); } "undef is valid too";
+	lives_ok { $validator->($dt); } "isa dt, no exception";
+	throws_ok { $validator->("nono"); } qr/not a datetime/i, "not a datetime object";
+	throws_ok { $validator->(GPS::Track->new()); } qr/not a datetime/i, "not a datetime object";
+	throws_ok { $validator->({}); } qr/not a datetime/i, "not a datetime object";
+	throws_ok { $validator->(sub {}); } qr/not a datetime/i, "not a datetime object";
 }
 
 

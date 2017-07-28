@@ -4,3 +4,5 @@ README
 t/GPS-Track.t
 t/GPS-Track-Point.t
 lib/GPS/Track.pm
+lib/GPS/Track/Parser.pm
+lib/GPS/Track/Point.pm

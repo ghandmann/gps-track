@@ -7,156 +7,51 @@ use Moo;
 use GPS::Track::Point;
 use XML::Simple;
 use Try::Tiny;
+use Scalar::Util qw/blessed/;
 
-has "onPoint" => (
+our $VERSION = '0.01';
+
+has ["distance", "duration", "power", "kcal"] => (
+	is => "rw",
+	default => undef,
+);
+
+has ["start", "stop"] => (
 	is => "rw",
 	isa => sub {
-		GPS::Track::_validateOnPoint(shift);
-	}
+		GPS::Track::_validateDateTime(shift);
+	},
+	default => undef,
 );
 
 sub BUILD {
 	my $self = shift;
 	my $args = shift;
 
-	if(exists $args->{onPoint}) {
-		GPS::Track::_validateOnPoint($args->{onPoint});
+	foreach(qw/start stop/) {
+		if(exists $args->{$_}) {
+			GPS::Track::_validateDateTime($args->{$_});
+		}
 	}
 
 	return $args;
 }
 
-sub _validateOnPoint {
+sub _validateDateTime {
 	my $candidate = shift;
-
-	if(defined($candidate) && ref($candidate) ne "CODE") {
-		die "Not a CODE-Ref to onPoint!"
-	}
-}
-
-our $VERSION = '0.01';
-
-sub parse {
-	my $self = shift;
-	my $file = shift;
-
-	my $tcx = $self->convert($file);
-	return $self->parseTCX($tcx);
-}
-
-sub convert { 
-	my $self = shift;
-
-	my $file = shift or die "No file supplied to parse!";
-	die "The file '$file' does not exist!" unless(-e $file);
-
-	# identify dies on unknown formats!
-	my $format = $self->identify($file);
-
-	my $xml = undef;
-	if($format eq "gpx") {
-		$xml = $self->_convertGPX($file);
-	}
-	elsif($format eq "fit") {
-		$xml = $self->_convertFIT($file);
-	}
-	elsif($format eq "tcx") {
-		$xml = $self->_convertTCX($file);
-	}
-
-	return $xml;
-}
-
-sub parseTCX {
-	my $self = shift;
-	my $xml = shift;
-
-	# use a faster parser
-	$XML::Simple::PREFERRED_PARSER = "XML::SAX::ExpatXS";
-
-	my @options = ( ForceArray => ['Course', 'Trackpoint'] );
-	my $data = XMLin($xml, @options);
-
-	my @courses = @{$data->{Courses}->{Course}};
-
-	my @retval;
-
-	foreach my $course (@courses) {
-		my @trackpoints = @{$course->{Track}->{Trackpoint}};
-		foreach my $p (@trackpoints) {
-			# Parse the ISO8601 DateTime
-			my $time = undef;
-			try {
-				$time = DateTime::Format::ISO8601->parse_datetime($p->{Time});
-			};
-
-			my $gpsTrackPoint = GPS::Track::Point->new(
-				lat => $p->{Position}->{LatitudeDegrees},
-				lon => $p->{Position}->{LongitudeDegrees},
-				time => $time,
-				ele => $p->{AltitudeMeters} || undef,
-				spd => $p->{Extensions}->{TPX}->{Speed} || undef,
-				bpm => $p->{HeartRateBpm}->{Value} || undef,
-				cad => $p->{Cadence} || undef,
-			);
-
-			# fire onPoint Callback
-			$self->onPoint()->($gpsTrackPoint) if(defined($self->onPoint));
-
-			# push back point
-			push(@retval, $gpsTrackPoint);
+	if(defined($candidate)) {
+		unless(blessed($candidate) && $candidate->isa("DateTime")) {
+			die "not a DateTime object!";
 		}
 	}
-
-	return @retval;
 }
 
-sub identify {
-	my $self = shift;
-	my $filename = shift;
+sub addPoint {
 
-	my $suffix = "";
-	if($filename =~ /\.(\w+)$/) {
-	  $suffix = lc($1);
-	}
-
-	my %validSuffixes = (
-		gpx => 1,
-		fit => 1,
-		tcx => 1,
-	);
-
-	die "File '$filename' has an unknown dataformat!" unless(exists $validSuffixes{$suffix});
-
-	return $suffix;
 }
 
-sub _convertFIT {
-	my $self = shift;
-	my $file = shift;
-	$self->gpsbabel_convert("garmin_fit", $file);
-}
+sub finalize {
 
-sub _convertGPX {
-	my $self = shift;
-	my $file = shift;
-	return $self->gpsbabel_convert("gpx", $file);
-}
-
-sub _convertTCX {
-	my $self = shift;
-	my $file = shift;
-
-	$self->gpsbabel_convert("gtrnctr", $file);
-}
-
-sub gpsbabel_convert {
-	my $self = shift;
-	my $sourceFormat = quotemeta(shift);
-	my $file = quotemeta(shift);
-
-	my $tcx = `gpsbabel -i $sourceFormat -f $file -o gtrnctr -F -`;
-	return $tcx;
 }
 
 1;
