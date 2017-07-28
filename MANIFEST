@@ -1,4 +1,5 @@
 .travis.yml
+Changes
 lib/GPS/Track.pm
 lib/GPS/Track/Point.pm
 Makefile.PL
