@@ -1,3 +1,6 @@
+Upcoming Release
+	- Include Github Repository in META files
+
 v0.02 2017-07-28
 	- Skip GPSBabel dependant tests if there is no GPSBabel
 	- Localize Usage of $XML::Simple::PREFERRED_PARSER (Thanks to SREZIC)
